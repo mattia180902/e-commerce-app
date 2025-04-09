@@ -1,4 +1,4 @@
-package com.example.discovery.discovery;
+package com.sincon.discovery;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
