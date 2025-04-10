@@ -12,7 +12,7 @@ CREATE TABLE if NOT exists product
     name VARCHAR(255),
     available_quantity DOUBLE precision NOT NULL,
     price NUMERIC(38,2),
-    category_id INTEGER 
+    category_id INTEGER
             constraint fk1fhjdjsjksksj REFERENCES category
 );
 

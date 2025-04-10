@@ -27,11 +27,11 @@ public class Product {
     private Integer id;
 
     private String name;
-    private String description; 
-    private double availableQuantity; 
-    private BigDecimal price; 
+    private String description;
+    private double availableQuantity;
+    private BigDecimal price;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
-    private Category Category;
+    private Category category;
 }
