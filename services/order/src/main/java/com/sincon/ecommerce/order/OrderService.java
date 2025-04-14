@@ -1,5 +1,8 @@
 package com.sincon.ecommerce.order;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 import com.sincon.ecommerce.customer.CustomerClient;
@@ -8,9 +11,12 @@ import com.sincon.ecommerce.kafka.OrderConfirmation;
 import com.sincon.ecommerce.kafka.OrderProducer;
 import com.sincon.ecommerce.orderline.OrderLineRequest;
 import com.sincon.ecommerce.orderline.OrderLineService;
+import com.sincon.ecommerce.payment.PaymentClient;
+import com.sincon.ecommerce.payment.PaymentRequest;
 import com.sincon.ecommerce.product.ProductClient;
 import com.sincon.ecommerce.product.PurchaseRequest;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -23,6 +29,7 @@ public class OrderService {
     private final OrderMapper mapper;
     private final OrderLineService orderLineService;
     private final OrderProducer orderProducer;
+    private final PaymentClient paymentClient;
 
     public Integer createOrder(OrderRequest request) {
 
@@ -50,7 +57,15 @@ public class OrderService {
             );
         }
 
-        // TODOstart payment process
+        // start payment process
+        var paymentRequest = new PaymentRequest(
+            request.amount(),
+            request.paymentMethod(),
+            order.getId(),
+            order.getReference(),
+            customer
+        );
+        paymentClient.requestOrderPayment(paymentRequest);
 
         // send the order confirmation --> notification-ms (kafka)
         orderProducer.sendOrderConfirmation(
@@ -64,5 +79,18 @@ public class OrderService {
         );
 
         return order.getId();
+    }
+
+    public List<OrderResponse> findAll() {
+        return repository.findAll()
+            .stream()
+            .map(mapper::fromOrder)
+            .collect(Collectors.toList());
+    }
+
+    public OrderResponse findById(Integer orderId) {
+        return repository.findById(orderId)
+            .map(mapper::fromOrder)
+            .orElseThrow(() -> new EntityNotFoundException(String.format("No order found with the provided ID: %d", orderId)));
     }
 }
