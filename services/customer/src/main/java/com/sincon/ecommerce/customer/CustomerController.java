@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
-@RequestMapping("/api/v1/customer")
+@RequestMapping("/api/v1/customers")
 @RequiredArgsConstructor
 public class CustomerController {
 
     private final CustomerService service; 
 
-    @PostMapping("path")
+    @PostMapping
     public ResponseEntity<String> createCustomer(
         @RequestBody @Valid CustomerRequest request
     ){
